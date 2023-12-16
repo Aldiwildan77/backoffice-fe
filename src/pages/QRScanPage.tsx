@@ -50,9 +50,11 @@ function QRScanPage() {
     decodeText: string,
     decodeResult: Html5QrcodeResult
   ) => {
+    console.log(decodeResult);
     emailValidationSchema
       .validate(decodeText)
       .then((valid) => {
+        console.log(valid);
         return navigate(`/qr/result`, {
           replace: true,
           state: { email: decodeText },
@@ -62,6 +64,8 @@ function QRScanPage() {
   };
 
   const onScanError: QrcodeErrorCallback = (errorMessage: string, error) => {
+    console.log(errorMessage);
+    console.log(error);
     return;
   };
 
