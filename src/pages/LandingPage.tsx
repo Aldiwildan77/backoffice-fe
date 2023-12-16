@@ -1,9 +1,11 @@
 import { Box, Button, Card, Heading, VStack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { BsQrCodeScan } from 'react-icons/bs';
+import { useNavigate } from 'react-router-dom';
 import { Device, useDeviceDetection } from '../hooks/useDeviceDetection';
 
 function LandingPage() {
+  const navigate = useNavigate();
   const [userDevice, setUserDevice] = useState<Device>();
   const device = useDeviceDetection();
 
@@ -11,6 +13,7 @@ function LandingPage() {
     if (device) {
       setUserDevice(device);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -37,8 +40,9 @@ function LandingPage() {
           <Heading fontSize={'32px'}>Check In</Heading>
           <VStack w='full' mt={'3rem'} spacing={'1rem'}>
             <Button
-              as={'a'}
-              href='/qr/scan'
+              onClick={() =>
+                userDevice !== Device.Desktop ? navigate('/qr/scan') : null
+              }
               bg={'forthColor'}
               color={'white'}
               borderRadius={'full'}
@@ -48,8 +52,9 @@ function LandingPage() {
               Scan QR
             </Button>
             <Button
-              as={'a'}
-              href='/backoffice'
+              onClick={() =>
+                userDevice === Device.Desktop ? navigate('/backoffice') : null
+              }
               bg={'forthColor'}
               color={'white'}
               borderRadius={'full'}
