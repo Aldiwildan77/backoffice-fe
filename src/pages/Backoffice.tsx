@@ -141,7 +141,7 @@ function Backoffice() {
       .then((res) => {
         setUploadApiState('idle');
         toast({
-          title: res.message,
+          title: 'Upload success',
           description: res.message,
           status: 'success',
           duration: 5 * 1000,
@@ -152,7 +152,7 @@ function Backoffice() {
       .catch((err) => {
         setUploadApiState('idle');
         toast({
-          title: err.message,
+          title: 'Upload failed',
           description: err.message,
           status: 'error',
           duration: 5 * 1000,

@@ -76,13 +76,21 @@ function ChangeSeat({ user, isOpen, onClose }: ChangeSeatProps) {
 
   const handleChangeSeat = (e: ChangeEvent<HTMLInputElement>) => {
     setSeat(e.target.value);
-    if (user) {
-      user.seat_table = e.target.value;
+  };
+
+  const handleOnSubmitSeat = () => {
+    onSubmit();
+    if (user && seat !== user.seat_table) {
+      user.seat_table = seat;
     }
   };
 
   return (
-    <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={handleOnClose}>
+    <Modal
+      blockScrollOnMount={true}
+      closeOnOverlayClick={false}
+      isOpen={isOpen}
+      onClose={handleOnClose}>
       <ModalOverlay />
       <ModalContent mx='2'>
         <ModalHeader fontSize={'18px'}>{user?.email}</ModalHeader>
@@ -99,7 +107,7 @@ function ChangeSeat({ user, isOpen, onClose }: ChangeSeatProps) {
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme='green' mr={3} onClick={onSubmit}>
+          <Button colorScheme='green' mr={3} onClick={handleOnSubmitSeat}>
             Update
           </Button>
           <Button onClick={handleOnClose}>Cancel</Button>
