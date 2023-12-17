@@ -276,7 +276,7 @@ function Backoffice() {
                       <option value={500}>500</option>
                     </Select>
                   </HStack>
-                  <Box display={{ base: 'none', lg: 'bloc' }}>
+                  <Box display={{ base: 'none', lg: 'block' }}>
                     <Text>
                       Showing {users.length} of {total} users
                     </Text>
