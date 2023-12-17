@@ -81,7 +81,6 @@ function Backoffice() {
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const [email, setEmail] = useState<string>('');
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, setUser] = useState<UserProfile>();
@@ -96,24 +95,16 @@ function Backoffice() {
     setTotalPage(users.meta.total_page);
   }, 500);
 
-  // useEffect(() => {
-  //   if (!email) {
-  //     return;
-  //   }
-  //   searchDebounce.clear();
-  //   searchDebounce(email);
-  // }, [email, searchDebounce]);
-
   useEffect(() => {
     const fetchUsers = async () => {
-      const users = await getUsers(page, limit, email || '');
+      const users = await getUsers(page, limit);
       setUsers(users.data);
       setTotal(users.meta.total);
       setTotalPage(users.meta.total_page);
     };
     fetchUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [page, limit]);
 
   const handleNextPage = () => {
     if (users.length < limit) {
@@ -169,14 +160,6 @@ function Backoffice() {
     setUser(user);
     onOpen();
   };
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const users = await getUsers(page, limit);
-      setUsers(users.data);
-    };
-    fetchUsers();
-  }, [page, limit]);
 
   return (
     <>
@@ -248,11 +231,9 @@ function Backoffice() {
                 placeholder='Search email'
                 borderColor={'rgba(0,0,0,0.1)'}
                 onChange={(e) => {
-                  setEmail(e.target.value);
                   searchDebounce.clear();
                   searchDebounce(e.target.value);
                 }}
-                value={email}
               />
               <InputRightElement color={'rgba(0,0,0,0.1)'}>
                 <FaSearch />
