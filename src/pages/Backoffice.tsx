@@ -4,6 +4,9 @@ import { Flex, HStack, Heading } from "@chakra-ui/layout";
 import {
   Box,
   Button,
+  Input,
+  InputGroup,
+  InputRightElement,
   Select,
   Table,
   TableContainer,
@@ -16,29 +19,30 @@ import {
   VStack,
   useDisclosure,
   useToast,
-} from '@chakra-ui/react';
-import { ChangeEvent, useEffect, useState } from 'react';
-import { MdArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
-import { useNavigate } from 'react-router';
-import { getUsers } from '../api/get-users';
-import { UserProfile } from '../interface/entity/user-profile';
+} from "@chakra-ui/react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
+import { useNavigate } from "react-router";
+import { getUsers } from "../api/get-users";
+import { UserProfile } from "../interface/entity/user-profile";
 
-import dayjs from 'dayjs';
-import { bulkSeatTable } from '../api/bulk-seat-table';
-import { getUsersExport } from '../api/export-users';
-import ChangeSeat from '../component/ChangeSeat';
-import { DATE_FORMAT } from '../constant/datetime';
-import { Transportation } from '../constant/transportation';
+import dayjs from "dayjs";
+import { bulkSeatTable } from "../api/bulk-seat-table";
+import { getUsersExport } from "../api/export-users";
+import ChangeSeat from "../component/ChangeSeat";
+import { DATE_FORMAT } from "../constant/datetime";
+import { Transportation } from "../constant/transportation";
+import { FaSearch } from "react-icons/fa";
 
 const TableHeaders = [
-  'Name',
-  'Email',
-  'Phone',
-  'Address',
-  'Departure',
-  'Return',
-  'Seat Table',
-  'Actions',
+  "Name",
+  "Email",
+  "Phone",
+  "Address",
+  "Departure",
+  "Return",
+  "Seat Table",
+  "Actions",
 ];
 
 const constructVechileDeparture = (user: UserProfile) => {
@@ -129,7 +133,7 @@ function Backoffice() {
         toast({
           title: res.message,
           description: res.message,
-          status: 'success',
+          status: "success",
           duration: 5 * 1000,
           isClosable: true,
         });
@@ -139,7 +143,7 @@ function Backoffice() {
         toast({
           title: err.message,
           description: err.message,
-          status: 'error',
+          status: "error",
           duration: 5 * 1000,
           isClosable: true,
         });
@@ -161,60 +165,73 @@ function Backoffice() {
 
   return (
     <>
-      <Flex w={'full'} h={'100vh'} bg={'white'} p='2'>
-        <VStack w={'full'} h={'full'} spacing={'2rem'}>
+      <Flex w={"full"} h={"100vh"} bg={"white"} p="2">
+        <VStack w={"full"} h={"full"} spacing={"2rem"}>
           <HStack
-            w={'full'}
-            bg={'rgba(0,0,0,0.1)'}
-            h='60px'
-            borderRadius={'8px'}
-            justifyContent={'space-between'}
-            px='2'
+            w={"full"}
+            bg={"rgba(0,0,0,0.1)"}
+            h="60px"
+            borderRadius={"8px"}
+            justifyContent={"space-between"}
+            px="2"
           >
             <HStack>
               <IconButton
-                onClick={() => navigate('/', { replace: true })}
-                as={'button'}
-                bg={'none'}
-                icon={<Icon as={MdArrowBackIosNew} boxSize='24px' />}
-                aria-label='Back'
+                onClick={() => navigate("/", { replace: true })}
+                as={"button"}
+                bg={"none"}
+                icon={<Icon as={MdArrowBackIosNew} boxSize="24px" />}
+                aria-label="Back"
                 _hover={{
-                  bg: 'none',
+                  bg: "none",
                 }}
               />
-              <Heading fontSize={'24px'}>Back Office</Heading>
+              <Heading fontSize={"24px"}>Back Office</Heading>
             </HStack>
             <HStack>
-              <Button as={'label'} bg={'forthColor'} cursor={'pointer'}>
+              <Button as={"label"} bg={"forthColor"} cursor={"pointer"}>
                 Upload Seat Bulk
                 <input
-                  type='file'
+                  type="file"
                   hidden
                   onChange={handleUploadFile}
-                  accept='.csv'
+                  accept=".csv"
                 />
               </Button>
               <Button
-                as={'a'}
+                as={"a"}
                 onClick={handleExportUsers}
-                bg={'forthColor'}
-                cursor={'pointer'}
+                bg={"forthColor"}
+                cursor={"pointer"}
                 download
               >
                 Export
               </Button>
             </HStack>
           </HStack>
-          <TableContainer w={'full'} h={'full'} bg={'white'}>
-            <VStack w='full' spacing='3'>
-              <Box w='full' whiteSpace={'nowrap'}>
-                <HStack w='full' justifyContent='space-between'>
+          <Flex w={"full"} justify={"end"}>
+            <InputGroup w={"30%"}>
+              <Input
+                focusBorderColor="forthColor"
+                placeholder="Search"
+                borderColor={"rgba(0,0,0,0.1)"}
+              />
+              <InputRightElement color={"rgba(0,0,0,0.1)"}>
+                <FaSearch />
+              </InputRightElement>
+            </InputGroup>
+          </Flex>
+
+          <TableContainer w={"full"} h={"full"} bg={"white"}>
+            <VStack w="full" spacing="3">
+              <Box w="full" whiteSpace={"nowrap"}>
+                <HStack w="full" justifyContent="space-between">
                   <HStack>
                     <Text>Limit</Text>
                     <Select
                       onChange={handleSetLimit}
                       value={limit}
-                      className='select'
+                      className="select"
                     >
                       <option value={10}>10</option>
                       <option value={25}>25</option>
@@ -230,12 +247,12 @@ function Backoffice() {
                   <HStack>
                     <IconButton
                       onClick={handlePrevPage}
-                      as={'button'}
-                      bg={'none'}
-                      icon={<Icon as={MdArrowBackIosNew} boxSize='24px' />}
-                      aria-label='Back'
+                      as={"button"}
+                      bg={"none"}
+                      icon={<Icon as={MdArrowBackIosNew} boxSize="24px" />}
+                      aria-label="Back"
                       _hover={{
-                        bg: 'none',
+                        bg: "none",
                       }}
                     />
                     <Text>
@@ -243,34 +260,34 @@ function Backoffice() {
                     </Text>
                     <IconButton
                       onClick={handleNextPage}
-                      as={'button'}
-                      bg={'none'}
-                      icon={<Icon as={MdArrowForwardIos} boxSize='24px' />}
-                      aria-label='Back'
+                      as={"button"}
+                      bg={"none"}
+                      icon={<Icon as={MdArrowForwardIos} boxSize="24px" />}
+                      aria-label="Back"
                       _hover={{
-                        bg: 'none',
+                        bg: "none",
                       }}
                     />
                   </HStack>
                 </HStack>
               </Box>
-              <Table variant='simple'>
-                <Thead bg={'rgba(0,0,0,0.4)'}>
+              <Table variant="simple">
+                <Thead bg={"rgba(0,0,0,0.4)"}>
                   <Tr>
                     {TableHeaders.map((header) => (
                       <Th
-                        key={`header-${header.replace(' ', '_')}`}
-                        textColor='white'
+                        key={`header-${header.replace(" ", "_")}`}
+                        textColor="white"
                       >
                         {header}
                       </Th>
                     ))}
                   </Tr>
                 </Thead>
-                <Tbody position={'relative'}>
+                <Tbody position={"relative"}>
                   {users &&
                     users.map((user) => (
-                      <Tr key={`user-${user.email}`} fontSize={'14px'}>
+                      <Tr key={`user-${user.email}`} fontSize={"14px"}>
                         <Td>{user.name}</Td>
                         <Td>{user.email}</Td>
                         <Td>{user.phone}</Td>
