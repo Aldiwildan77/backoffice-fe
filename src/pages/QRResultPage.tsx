@@ -9,15 +9,15 @@ import {
   IconButton,
   VStack,
   useToast,
-} from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { BsSignpostFill } from "react-icons/bs";
-import { FaMap, FaPhone, FaUserAlt } from "react-icons/fa";
-import { MdArrowBackIosNew, MdEmail } from "react-icons/md";
-import { useLocation, useNavigate } from "react-router-dom";
-import { checkIn } from "../api/check-in";
-import { getUserByEmail } from "../api/get-user-by-email";
-import type { UserProfile } from "../interface/api/get-user-by-email";
+} from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { BsSignpostFill } from 'react-icons/bs';
+import { FaMap, FaPhone, FaUserAlt } from 'react-icons/fa';
+import { MdArrowBackIosNew, MdEmail } from 'react-icons/md';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { checkIn } from '../api/check-in';
+import { getUserByEmail } from '../api/get-user-by-email';
+import { UserProfile } from '../interface/entity/user-profile';
 
 function QRResultPage() {
   const toast = useToast();
