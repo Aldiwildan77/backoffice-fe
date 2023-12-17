@@ -14,6 +14,7 @@ import {
   Thead,
   Tr,
   VStack,
+  useToast,
 } from '@chakra-ui/react';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { MdArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
@@ -22,6 +23,7 @@ import { getUsers } from '../api/get-users';
 import { UserProfile } from '../interface/entity/user-profile';
 
 import dayjs from 'dayjs';
+import { bulkSeatTable } from '../api/bulk-seat-table';
 import { getUsersExport } from '../api/export-users';
 import { DATE_FORMAT } from '../constant/datetime';
 import { Transportation } from '../constant/transportation';
@@ -58,8 +60,8 @@ const constructVechileReturn = (user: UserProfile) => {
 };
 
 function Backoffice() {
-  // const toast = useToast();
   // const device = useDeviceDetection();
+  const toast = useToast();
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [page, setPage] = useState(1);
@@ -112,6 +114,35 @@ function Backoffice() {
     getUsersExport();
   };
 
+  const handleUploadFile = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) {
+      return;
+    }
+
+    const file = e.target.files[0];
+    console.log(file);
+    bulkSeatTable(file)
+      .then((res) => {
+        toast({
+          title: res.message,
+          description: res.message,
+          status: res.status,
+          duration: 5 * 1000,
+          isClosable: true,
+        });
+        navigate(0);
+      })
+      .catch((err) => {
+        toast({
+          title: err.message,
+          description: err.message,
+          status: 'error',
+          duration: 5 * 1000,
+          isClosable: true,
+        });
+      });
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       console.log('fetching users');
@@ -146,6 +177,15 @@ function Backoffice() {
             <Heading fontSize={'24px'}>Backoffice</Heading>
           </HStack>
           <HStack>
+            <Button as={'label'} bg={'forthColor'}>
+              Upload Seat Bulk
+              <input
+                type='file'
+                hidden
+                onChange={handleUploadFile}
+                accept='.csv'
+              />
+            </Button>
             <Button
               as={'a'}
               onClick={handleExportUsers}
