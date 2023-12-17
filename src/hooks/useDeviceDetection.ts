@@ -1,40 +1,41 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export enum Device {
-  Desktop = 'Desktop',
-  Tablet = 'Tablet',
-  Mobile = 'Mobile',
+  Desktop = "Desktop",
+  Tablet = "Tablet",
+  Mobile = "Mobile",
 }
 
 const useDeviceDetection = () => {
-  const [device, setDevice] = useState<Device | null>();
+  const [device, setDevice] = useState<Device>(Device.Mobile);
+
+  const determineDevice = () => {
+    if (
+      window.innerWidth <= 768 &&
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      )
+    ) {
+      return Device.Mobile;
+    } else {
+      return Device.Desktop;
+    }
+  };
+
+  const handleDeviceDetection = () => {
+    const device = determineDevice();
+    setDevice(device);
+  };
 
   useEffect(() => {
-    const handleDeviceDetection = () => {
-      const userAgent = navigator.userAgent.toLowerCase();
-      const isMobile =
-        /iphone|ipad|ipod|android|blackberry|windows phone/g.test(userAgent);
-      const isTablet =
-        /(ipad|tablet|playbook|silk)|(android(?!.*mobile))/g.test(userAgent);
-
-      if (isMobile) {
-        setDevice(Device.Mobile);
-      } else if (isTablet) {
-        setDevice(Device.Tablet);
-      } else {
-        setDevice(Device.Desktop);
-      }
-    };
-
     handleDeviceDetection();
-    window.addEventListener('resize', handleDeviceDetection);
-
+    window.addEventListener("resize", handleDeviceDetection);
     return () => {
-      window.removeEventListener('resize', handleDeviceDetection);
+      window.removeEventListener("resize", handleDeviceDetection);
     };
   }, []);
 
-  return device;
+  return [device];
 };
 
 export { useDeviceDetection };

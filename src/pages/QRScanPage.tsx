@@ -10,7 +10,7 @@ import {
   IconButton,
   VStack,
   useToast,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   Html5QrcodeResult,
   Html5QrcodeScanType,
@@ -18,30 +18,30 @@ import {
   Html5QrcodeSupportedFormats,
   QrcodeErrorCallback,
   QrcodeSuccessCallback,
-} from 'html5-qrcode';
-import { useEffect, useState } from 'react';
-import { MdArrowBackIosNew } from 'react-icons/md';
-import { useNavigate } from 'react-router';
-import { emailValidationSchema } from '../app/validator/email.validator';
-import { Device, useDeviceDetection } from '../hooks/useDeviceDetection';
+} from "html5-qrcode";
+import { useEffect, useState } from "react";
+import { MdArrowBackIosNew } from "react-icons/md";
+import { useNavigate } from "react-router";
+import { emailValidationSchema } from "../app/validator/email.validator";
+import { Device, useDeviceDetection } from "../hooks/useDeviceDetection";
 
 function QRScanPage() {
-  const device = useDeviceDetection();
-  const toast = useToast();
+  const [device] = useDeviceDetection();
   const navigate = useNavigate();
   const [isGranted, setGranted] = useState<boolean>(false);
   const [isRender, setRender] = useState<boolean>(false);
+  const toast = useToast();
 
   useEffect(() => {
-    if (device && device === Device.Desktop) {
+    if (device === Device.Desktop) {
       toast({
-        title: 'Only mobile and tablet are supported',
-        description: 'Only mobile and tablet are supported',
-        status: 'error',
+        title: "Only mobile and tablet are supported",
+        description: "Only mobile and tablet are supported",
+        status: "error",
         duration: 5 * 1000,
         isClosable: true,
       });
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [device]);
@@ -96,7 +96,7 @@ function QRScanPage() {
 
     try {
       const scanner = new Html5QrcodeScanner(
-        'qr-scanner',
+        "qr-scanner",
         {
           fps: 10,
           qrbox: { height: 200, width: 200 },
@@ -117,47 +117,47 @@ function QRScanPage() {
   }, [isGranted, isRender]);
 
   return (
-    <Center w={'full'} h={'100vh'}>
+    <Center w={"full"} h={"100vh"}>
       <Flex
-        w='full'
-        h={'100vh'}
-        flexDir={'row'}
-        justifyContent={'center'}
-        alignItems={'center'}
-        py={{ lg: '2rem' }}
+        w="full"
+        h={"100vh"}
+        flexDir={"row"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        py={{ lg: "2rem" }}
       >
         <Card
-          h='full'
-          w='full'
-          maxW='800px'
+          h="full"
+          w="full"
+          maxW="800px"
           minW={{
-            base: 'auto',
-            lg: '400px',
+            base: "auto",
+            lg: "400px",
           }}
-          py={'2rem'}
-          px={'2rem'}
-          bg={'white'}
+          py={"2rem"}
+          px={"2rem"}
+          bg={"white"}
         >
-          <VStack spacing={'4'} w='full'>
-            <HStack w='full' h='full' textAlign={'center'}>
+          <VStack spacing={"4"} w="full">
+            <HStack w="full" h="full" textAlign={"center"}>
               <IconButton
-                onClick={() => navigate('/', { replace: true })}
-                as={'button'}
-                bg={'white'}
-                icon={<Icon as={MdArrowBackIosNew} boxSize='24px' />}
-                aria-label='Back'
+                onClick={() => navigate("/", { replace: true })}
+                as={"button"}
+                bg={"white"}
+                icon={<Icon as={MdArrowBackIosNew} boxSize="24px" />}
+                aria-label="Back"
                 _hover={{
-                  bg: 'white',
+                  bg: "white",
                 }}
               />
-              <Heading fontSize={'24px'}>Scan QR</Heading>
+              <Heading fontSize={"24px"}>Scan QR</Heading>
             </HStack>
 
             {isRender ? (
-              <Box w='full' id='qr-scanner' />
+              <Box w="full" id="qr-scanner" />
             ) : (
-              <Center w='full' h='full'>
-                <Heading fontSize={'24px'}>Camera not found!</Heading>
+              <Center w="full" h="full">
+                <Heading fontSize={"24px"}>Camera not found!</Heading>
               </Center>
             )}
           </VStack>

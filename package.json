@@ -16,6 +16,7 @@
     "@emotion/styled": "^11.11.0",
     "axios": "^1.6.2",
     "dayjs": "^1.11.10",
+    "debounce": "^2.0.0",
     "framer-motion": "^10.16.16",
     "html5-qrcode": "^2.3.8",
     "i": "^0.3.7",
