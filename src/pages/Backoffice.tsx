@@ -174,7 +174,7 @@ function Backoffice() {
                 bg: 'none',
               }}
             />
-            <Heading fontSize={'24px'}>Backoffice</Heading>
+            <Heading fontSize={'24px'}>Back Office</Heading>
           </HStack>
           <HStack>
             <Button as={'label'} bg={'forthColor'}>
