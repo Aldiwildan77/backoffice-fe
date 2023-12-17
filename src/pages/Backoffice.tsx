@@ -1,6 +1,6 @@
-import { IconButton } from "@chakra-ui/button";
-import { Icon } from "@chakra-ui/icon";
-import { Flex, HStack, Heading } from "@chakra-ui/layout";
+import { IconButton } from '@chakra-ui/button';
+import { Icon } from '@chakra-ui/icon';
+import { Flex, HStack, Heading } from '@chakra-ui/layout';
 import {
   Box,
   Button,
@@ -19,30 +19,32 @@ import {
   VStack,
   useDisclosure,
   useToast,
-} from "@chakra-ui/react";
-import { ChangeEvent, useEffect, useState } from "react";
-import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
-import { useNavigate } from "react-router";
-import { getUsers } from "../api/get-users";
-import { UserProfile } from "../interface/entity/user-profile";
+} from '@chakra-ui/react';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { MdArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
+import { useNavigate } from 'react-router';
+import { getUsers } from '../api/get-users';
+import { UserProfile } from '../interface/entity/user-profile';
 
-import dayjs from "dayjs";
-import { bulkSeatTable } from "../api/bulk-seat-table";
-import { getUsersExport } from "../api/export-users";
-import ChangeSeat from "../component/ChangeSeat";
-import { DATE_FORMAT } from "../constant/datetime";
-import { Transportation } from "../constant/transportation";
-import { FaSearch } from "react-icons/fa";
+import dayjs from 'dayjs';
+import debounce from 'debounce';
+import { FaSearch } from 'react-icons/fa';
+import { bulkSeatTable } from '../api/bulk-seat-table';
+import { getUsersExport } from '../api/export-users';
+import ChangeSeat from '../component/ChangeSeat';
+import { DATE_FORMAT } from '../constant/datetime';
+import { Transportation } from '../constant/transportation';
 
 const TableHeaders = [
-  "Name",
-  "Email",
-  "Phone",
-  "Address",
-  "Departure",
-  "Return",
-  "Seat Table",
-  "Actions",
+  'Name',
+  'Email',
+  'Phone',
+  'Address',
+  'Departure',
+  'Return',
+  'Seat Table',
+  'Check In',
+  'Actions',
 ];
 
 const constructVechileDeparture = (user: UserProfile) => {
@@ -52,7 +54,10 @@ const constructVechileDeparture = (user: UserProfile) => {
   if (user.depart_vehicle_type === Transportation.TRAIN.toString()) {
     return `${user.depart_train_name}`;
   }
-  return "";
+  if (user.depart_vehicle_type === Transportation.OTHER.toString()) {
+    return `${user.depart_vehicle_additional_info}`;
+  }
+  return '';
 };
 
 const constructVechileReturn = (user: UserProfile) => {
@@ -62,11 +67,13 @@ const constructVechileReturn = (user: UserProfile) => {
   if (user.return_vehicle_type === Transportation.TRAIN.toString()) {
     return `${user.return_train_name}`;
   }
-  return "";
+  if (user.return_vehicle_type === Transportation.OTHER.toString()) {
+    return `${user.return_vehicle_additional_info}`;
+  }
+  return '';
 };
 
 function Backoffice() {
-  // const device = useDeviceDetection();
   const toast = useToast();
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -74,24 +81,32 @@ function Backoffice() {
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [email, setEmail] = useState<string>('');
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, setUser] = useState<UserProfile>();
 
-  // if (device && device !== Device.Desktop) {
-  //   toast({
-  //     title: 'Only desktop supported',
-  //     description: 'Only desktop supported',
-  //     status: 'error',
-  //     duration: 5 * 1000,
-  //     isClosable: true,
-  //   });
-  //   navigate('/', { replace: true });
-  // }
+  const searchDebounce = debounce(async (email: string) => {
+    if (!email) {
+      return;
+    }
+    const users = await getUsers(page, limit, email);
+    setUsers(users.data);
+    setTotal(users.meta.total);
+    setTotalPage(users.meta.total_page);
+  }, 500);
+
+  // useEffect(() => {
+  //   if (!email) {
+  //     return;
+  //   }
+  //   searchDebounce.clear();
+  //   searchDebounce(email);
+  // }, [email, searchDebounce]);
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const users = await getUsers(page, limit);
+      const users = await getUsers(page, limit, email || '');
       setUsers(users.data);
       setTotal(users.meta.total);
       setTotalPage(users.meta.total_page);
@@ -133,7 +148,7 @@ function Backoffice() {
         toast({
           title: res.message,
           description: res.message,
-          status: "success",
+          status: 'success',
           duration: 5 * 1000,
           isClosable: true,
         });
@@ -143,7 +158,7 @@ function Backoffice() {
         toast({
           title: err.message,
           description: err.message,
-          status: "error",
+          status: 'error',
           duration: 5 * 1000,
           isClosable: true,
         });
@@ -165,81 +180,103 @@ function Backoffice() {
 
   return (
     <>
-      <Flex w={"full"} h={"100vh"} bg={"white"} p="2">
-        <VStack w={"full"} h={"full"} spacing={"2rem"}>
+      <Box
+        bg='white'
+        w={'full'}
+        h={'100vh'}
+        position={'absolute'}
+        zIndex={'-1'}
+      />
+      <Flex
+        w={'full'}
+        h={{ base: '100vh', md: 'auto', lg: 'auto' }}
+        bg={'white'}
+        p='2'
+        overflowX='hidden'>
+        <VStack w={'full'} h={'full'} spacing={'2rem'}>
           <HStack
-            w={"full"}
-            bg={"rgba(0,0,0,0.1)"}
-            h="60px"
-            borderRadius={"8px"}
-            justifyContent={"space-between"}
-            px="2"
-          >
+            w={'full'}
+            bg={'rgba(0,0,0,0.1)'}
+            h='60px'
+            borderRadius={'8px'}
+            justifyContent={'space-between'}
+            p='2'>
             <HStack>
               <IconButton
-                onClick={() => navigate("/", { replace: true })}
-                as={"button"}
-                bg={"none"}
-                icon={<Icon as={MdArrowBackIosNew} boxSize="24px" />}
-                aria-label="Back"
+                onClick={() => navigate('/', { replace: true })}
+                as={'button'}
+                bg={'none'}
+                icon={
+                  <Icon
+                    as={MdArrowBackIosNew}
+                    boxSize={{ base: '16px', lg: '24px' }}
+                  />
+                }
+                aria-label='Back'
                 _hover={{
-                  bg: "none",
+                  bg: 'none',
                 }}
               />
-              <Heading fontSize={"24px"}>Back Office</Heading>
+              <Heading fontSize={{ base: 'sm', lg: '24px' }}>
+                Back Office
+              </Heading>
             </HStack>
-            <HStack>
-              <Button as={"label"} bg={"forthColor"} cursor={"pointer"}>
-                Upload Seat Bulk
+            <HStack display={{ base: 'none', lg: 'flex' }}>
+              <Button as={'label'} bg={'forthColor'} cursor={'pointer'}>
+                Upload
                 <input
-                  type="file"
+                  type='file'
                   hidden
                   onChange={handleUploadFile}
-                  accept=".csv"
+                  accept='.csv'
                 />
               </Button>
               <Button
-                as={"a"}
+                as={'a'}
                 onClick={handleExportUsers}
-                bg={"forthColor"}
-                cursor={"pointer"}
-                download
-              >
+                bg={'forthColor'}
+                cursor={'pointer'}
+                download>
                 Export
               </Button>
             </HStack>
           </HStack>
-          <Flex w={"full"} justify={"end"}>
-            <InputGroup w={"30%"}>
+          <Flex w={'full'} justify={'end'}>
+            <InputGroup w={{ base: 'full', lg: '25%' }}>
               <Input
-                focusBorderColor="forthColor"
-                placeholder="Search"
-                borderColor={"rgba(0,0,0,0.1)"}
+                focusBorderColor='forthColor'
+                placeholder='Search email'
+                borderColor={'rgba(0,0,0,0.1)'}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  searchDebounce.clear();
+                  searchDebounce(e.target.value);
+                }}
+                value={email}
               />
-              <InputRightElement color={"rgba(0,0,0,0.1)"}>
+              <InputRightElement color={'rgba(0,0,0,0.1)'}>
                 <FaSearch />
               </InputRightElement>
             </InputGroup>
           </Flex>
 
-          <TableContainer w={"full"} h={"full"} bg={"white"}>
-            <VStack w="full" spacing="3">
-              <Box w="full" whiteSpace={"nowrap"}>
-                <HStack w="full" justifyContent="space-between">
+          <TableContainer w={'full'} h={'full'} bg={'white'} mb='10'>
+            <VStack w='full' spacing='3'>
+              <Box w='full'>
+                <HStack w='full' justifyContent='space-between'>
                   <HStack>
                     <Text>Limit</Text>
                     <Select
                       onChange={handleSetLimit}
                       value={limit}
-                      className="select"
-                    >
+                      className='select'>
                       <option value={10}>10</option>
                       <option value={25}>25</option>
                       <option value={100}>100</option>
                       <option value={500}>500</option>
                     </Select>
                   </HStack>
-                  <Box>
+                  <Box display={{ base: 'none', lg: 'bloc' }}>
                     <Text>
                       Showing {users.length} of {total} users
                     </Text>
@@ -247,12 +284,12 @@ function Backoffice() {
                   <HStack>
                     <IconButton
                       onClick={handlePrevPage}
-                      as={"button"}
-                      bg={"none"}
-                      icon={<Icon as={MdArrowBackIosNew} boxSize="24px" />}
-                      aria-label="Back"
+                      as={'button'}
+                      bg={'none'}
+                      icon={<Icon as={MdArrowBackIosNew} boxSize='24px' />}
+                      aria-label='Back'
                       _hover={{
-                        bg: "none",
+                        bg: 'none',
                       }}
                     />
                     <Text>
@@ -260,65 +297,69 @@ function Backoffice() {
                     </Text>
                     <IconButton
                       onClick={handleNextPage}
-                      as={"button"}
-                      bg={"none"}
-                      icon={<Icon as={MdArrowForwardIos} boxSize="24px" />}
-                      aria-label="Back"
+                      as={'button'}
+                      bg={'none'}
+                      icon={<Icon as={MdArrowForwardIos} boxSize='24px' />}
+                      aria-label='Back'
                       _hover={{
-                        bg: "none",
+                        bg: 'none',
                       }}
                     />
                   </HStack>
                 </HStack>
               </Box>
-              <Table variant="simple">
-                <Thead bg={"rgba(0,0,0,0.4)"}>
-                  <Tr>
-                    {TableHeaders.map((header) => (
-                      <Th
-                        key={`header-${header.replace(" ", "_")}`}
-                        textColor="white"
-                      >
-                        {header}
-                      </Th>
-                    ))}
-                  </Tr>
-                </Thead>
-                <Tbody position={"relative"}>
-                  {users &&
-                    users.map((user) => (
-                      <Tr key={`user-${user.email}`} fontSize={"14px"}>
-                        <Td>{user.name}</Td>
-                        <Td>{user.email}</Td>
-                        <Td>{user.phone}</Td>
-                        <Td>
-                          <Text>{user.address}</Text>
-                          <Text>{user.postal_code}</Text>
-                        </Td>
-                        <Td>
-                          <Text>
-                            {dayjs(user.depart_at).format(DATE_FORMAT)}
-                          </Text>
-                          <Text>{user.depart_vehicle_type}</Text>
-                          <Text>{constructVechileDeparture(user)}</Text>
-                        </Td>
-                        <Td>
-                          <Text>
-                            {dayjs(user.return_at).format(DATE_FORMAT)}
-                          </Text>
-                          <Text>{user.return_vehicle_type}</Text>
-                          <Text>{constructVechileReturn(user)}</Text>
-                        </Td>
-                        <Td>{user.seat_table}</Td>
-                        <Td>
-                          <Button onClick={() => handleOpenChangeSeat(user)}>
-                            Change Seat
-                          </Button>
-                        </Td>
-                      </Tr>
-                    ))}
-                </Tbody>
-              </Table>
+              <Box w='full' h='full' overflowX='scroll'>
+                <Table variant='simple'>
+                  <Thead bg={'rgba(0,0,0,0.4)'}>
+                    <Tr>
+                      {TableHeaders.map((header) => (
+                        <Th
+                          key={`header-${header.replace(' ', '_')}`}
+                          textColor='white'>
+                          {header}
+                        </Th>
+                      ))}
+                    </Tr>
+                  </Thead>
+                  <Tbody position={'relative'}>
+                    {users &&
+                      users.map((user) => (
+                        <Tr key={`user-${user.email}`} fontSize={'14px'}>
+                          <Td>{user.name}</Td>
+                          <Td>{user.email}</Td>
+                          <Td>{user.phone}</Td>
+                          <Td>
+                            <Text>{user.address}</Text>
+                            <Text>{user.postal_code}</Text>
+                          </Td>
+                          <Td>
+                            <Text>
+                              {dayjs(user.depart_at).format(DATE_FORMAT)}
+                            </Text>
+                            <Text>{user.depart_vehicle_type}</Text>
+                            <Text>{constructVechileDeparture(user)}</Text>
+                          </Td>
+                          <Td>
+                            <Text>
+                              {dayjs(user.return_at).format(DATE_FORMAT)}
+                            </Text>
+                            <Text>{user.return_vehicle_type}</Text>
+                            <Text>{constructVechileReturn(user)}</Text>
+                          </Td>
+                          <Td>{user.seat_table}</Td>
+                          <Td>{user.checked_in ? 'Yes' : 'No'}</Td>
+                          <Td>
+                            <Button
+                              bg={'forthColor'}
+                              onClick={() => handleOpenChangeSeat(user)}>
+                              Change Seat
+                            </Button>
+                          </Td>
+                        </Tr>
+                      ))}
+                  </Tbody>
+                </Table>
+              </Box>
             </VStack>
           </TableContainer>
         </VStack>

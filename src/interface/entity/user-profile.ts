@@ -9,11 +9,14 @@ export type UserProfile = {
   depart_flight_number: string;
   depart_airline: string;
   depart_train_name: string;
+  depart_vehicle_additional_info: string;
   return_at: string;
   return_vehicle_type: string;
   return_flight_number: string;
   return_airline: string;
   return_train_name: string;
+  return_vehicle_additional_info: string;
   qr_link: string;
   seat_table: string;
+  checked_in: boolean;
 };

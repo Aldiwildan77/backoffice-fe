@@ -5,7 +5,7 @@ import { server } from './server';
 export const getUserByEmail = async (email: string) => {
   try {
     const { data: resp } = await server.get<GetUserByEmailResponse>(
-      `/api/users?email=${email}&page=1&limit=1`
+      `/api/users?email=${email}&page=1&limit=1`,
     );
     return resp.data[0];
   } catch (error) {

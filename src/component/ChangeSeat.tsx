@@ -76,12 +76,15 @@ function ChangeSeat({ user, isOpen, onClose }: ChangeSeatProps) {
 
   const handleChangeSeat = (e: ChangeEvent<HTMLInputElement>) => {
     setSeat(e.target.value);
+    if (user) {
+      user.seat_table = e.target.value;
+    }
   };
 
   return (
     <Modal blockScrollOnMount={false} isOpen={isOpen} onClose={handleOnClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent mx='2'>
         <ModalHeader fontSize={'18px'}>{user?.email}</ModalHeader>
         <ModalBody pb={6}>
           <FormControl>
