@@ -81,6 +81,9 @@ function Backoffice() {
   const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [uploadApiState, setUploadApiState] = useState<'idle' | 'pending'>(
+    'idle',
+  );
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, setUser] = useState<UserProfile>();
@@ -136,6 +139,7 @@ function Backoffice() {
     const file = e.target.files[0];
     bulkSeatTable(file)
       .then((res) => {
+        setUploadApiState('idle');
         toast({
           title: res.message,
           description: res.message,
@@ -146,6 +150,7 @@ function Backoffice() {
         setTimeout(() => navigate(0), 1000);
       })
       .catch((err) => {
+        setUploadApiState('idle');
         toast({
           title: err.message,
           description: err.message,
@@ -205,12 +210,19 @@ function Backoffice() {
               </Heading>
             </HStack>
             <HStack display={{ base: 'none', lg: 'flex' }}>
-              <Button as={'label'} bg={'forthColor'} cursor={'pointer'}>
+              <Button
+                as={'label'}
+                bg={'forthColor'}
+                cursor={'pointer'}
+                isLoading={uploadApiState === 'pending'}>
                 Upload
                 <input
                   type='file'
                   hidden
-                  onChange={handleUploadFile}
+                  onChange={(e) => {
+                    setUploadApiState('pending');
+                    handleUploadFile(e);
+                  }}
                   accept='.csv'
                 />
               </Button>
