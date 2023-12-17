@@ -7,7 +7,6 @@ export const setSeatTable = async (email: string, seat_table: string) => {
       email,
       seat_table,
     });
-    console.log(response);
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError;

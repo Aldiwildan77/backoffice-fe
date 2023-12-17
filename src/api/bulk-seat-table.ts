@@ -3,7 +3,6 @@ import { server } from './server';
 
 export const bulkSeatTable = async (file: File) => {
   try {
-    console.log(file);
     const { data: resp } = await server.putForm('/api/users/seat-tables', {
       file,
     });

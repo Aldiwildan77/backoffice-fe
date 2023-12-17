@@ -27,7 +27,6 @@ function ChangeSeat({ user, isOpen, onClose }: ChangeSeatProps) {
   const toast = useToast();
 
   const onSubmit = async () => {
-    console.log(user);
     if (!user) {
       return;
     }

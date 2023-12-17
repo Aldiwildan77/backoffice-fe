@@ -87,7 +87,6 @@ function Backoffice() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      console.log('fetching users');
       const users = await getUsers(page, limit);
       setUsers(users.data);
       setTotal(users.meta.total);
@@ -186,7 +185,7 @@ function Backoffice() {
               <Heading fontSize={'24px'}>Back Office</Heading>
             </HStack>
             <HStack>
-              <Button as={'label'} bg={'forthColor'}>
+              <Button as={'label'} bg={'forthColor'} cursor={'pointer'}>
                 Upload Seat Bulk
                 <input
                   type='file'
@@ -199,6 +198,7 @@ function Backoffice() {
                 as={'a'}
                 onClick={handleExportUsers}
                 bg={'forthColor'}
+                cursor={'pointer'}
                 download
               >
                 Export
