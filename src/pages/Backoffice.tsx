@@ -126,11 +126,11 @@ function Backoffice() {
         toast({
           title: res.message,
           description: res.message,
-          status: res.status,
+          status: 'success',
           duration: 5 * 1000,
           isClosable: true,
         });
-        navigate(0);
+        setTimeout(() => navigate(0), 1000);
       })
       .catch((err) => {
         toast({
@@ -145,7 +145,6 @@ function Backoffice() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      console.log('fetching users');
       const users = await getUsers(page, limit);
       setUsers(users.data);
     };
