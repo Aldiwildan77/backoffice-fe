@@ -3,6 +3,7 @@ import { Icon } from '@chakra-ui/icon';
 import { Flex, HStack, Heading } from '@chakra-ui/layout';
 import {
   Box,
+  Button,
   Select,
   Table,
   TableContainer,
@@ -86,6 +87,7 @@ function Backoffice() {
       setTotalPage(users.meta.total_page);
     };
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleNextPage = () => {
@@ -107,7 +109,6 @@ function Backoffice() {
   };
 
   const handleExportUsers = () => {
-    console.log('export users');
     getUsersExport();
   };
 
@@ -123,18 +124,37 @@ function Backoffice() {
   return (
     <Flex w={'full'} h={'100vh'} bg={'white'} p='2'>
       <VStack w={'full'} h={'full'} spacing={'2rem'}>
-        <HStack w={'full'} bg={'rgba(0,0,0,0.1)'} h='60px' borderRadius={'8px'}>
-          <IconButton
-            onClick={() => navigate('/', { replace: true })}
-            as={'button'}
-            bg={'none'}
-            icon={<Icon as={MdArrowBackIosNew} boxSize='24px' />}
-            aria-label='Back'
-            _hover={{
-              bg: 'none',
-            }}
-          />
-          <Heading fontSize={'24px'}>Backoffice</Heading>
+        <HStack
+          w={'full'}
+          bg={'rgba(0,0,0,0.1)'}
+          h='60px'
+          borderRadius={'8px'}
+          justifyContent={'space-between'}
+          px='2'
+        >
+          <HStack>
+            <IconButton
+              onClick={() => navigate('/', { replace: true })}
+              as={'button'}
+              bg={'none'}
+              icon={<Icon as={MdArrowBackIosNew} boxSize='24px' />}
+              aria-label='Back'
+              _hover={{
+                bg: 'none',
+              }}
+            />
+            <Heading fontSize={'24px'}>Backoffice</Heading>
+          </HStack>
+          <HStack>
+            <Button
+              as={'a'}
+              onClick={handleExportUsers}
+              bg={'forthColor'}
+              download
+            >
+              Export
+            </Button>
+          </HStack>
         </HStack>
         <TableContainer w={'full'} h={'full'} bg={'white'}>
           <VStack w='full' spacing='3'>
