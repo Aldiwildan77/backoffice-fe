@@ -274,7 +274,10 @@ function Backoffice() {
                         <Td>{user.name}</Td>
                         <Td>{user.email}</Td>
                         <Td>{user.phone}</Td>
-                        <Td>{user.address}</Td>
+                        <Td>
+                          <Text>{user.address}</Text>
+                          <Text>{user.postal_code}</Text>
+                        </Td>
                         <Td>
                           <Text>
                             {dayjs(user.depart_at).format(DATE_FORMAT)}
