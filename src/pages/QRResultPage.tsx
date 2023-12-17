@@ -17,7 +17,7 @@ import { MdArrowBackIosNew, MdEmail } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { checkIn } from '../api/check-in';
 import { getUserByEmail } from '../api/get-user-by-email';
-import type { UserProfile } from '../interface/api/get-user-by-email';
+import { UserProfile } from '../interface/entity/user-profile';
 
 function QRResultPage() {
   const toast = useToast();
